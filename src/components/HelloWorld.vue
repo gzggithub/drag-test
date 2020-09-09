@@ -1,41 +1,98 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <draggable v-model="myArray" draggable=".item" group="people" :move="dragMove" @start="drag=true" @end="drag=false">
+      <div v-for="(element, index) in myArray" :ref="'px' + index" :key="element.id" class="item">{{element.name}}</div>
+    </draggable>
+    <h2>333</h2>
+    <draggable v-model="myArray2" draggable=".item" group="people">
+      <div v-for="(element, index) in myArray2" :ref="'pxl' + index" :key="element.id" class="item">{{element.name}}</div>
+    </draggable>
+
+    <h2>rrrr</h2>
+    <div style="border:1px solid green;" draggable="true" @dragstart="dragstart($event, item.data)" @dragend="dragend">
+      {{item.data}}
+    </div>
+    <h2>hhhh</h2>
+    <div style="border:1px solid red;height: 100px;width:300px;" @drop="drop" @dragover.prevent>
+      <h1 style="color:#ccc;">{{this.dropData}}</h1>
+      <h2 style="color:#ccc;">{{this.dropData}}</h2>
+      <h3 style="color:#ccc;">{{this.dropData}}</h3>
+    </div>
   </div>
 </template>
 
 <script>
+import draggable from 'vuedraggable'
 export default {
   name: 'HelloWorld',
+  components: {
+    draggable,
+  },
   props: {
     msg: String
-  }
+  },
+  data() {
+    return {
+      myArray: [
+        {
+          id: 1,
+          name: '小郭'
+        },
+        {
+          id: 2,
+          name: '小郭2'
+        },
+        {
+          id: 3,
+          name: '小郭3'
+        }
+      ],
+      myArray2: [
+        {
+          id: 11,
+          name: '小郭2'
+        },
+        {
+          id: 22,
+          name: '小郭22'
+        },
+        {
+          id: 33,
+          name: '小郭23'
+        }
+      ],
+      drag: false,
+      dropData: 'uuu',
+      item: {
+        data: 'dd'
+      }
+    }
+  },
+  methods: {
+    dragMove({ draggedContext, relatedContext}) {
+      console.log(draggedContext);
+      console.log(relatedContext);
+      return (draggedContext.element.name!=='apple')
+    },
+    dragstart(event, data) {
+      console.log('drag')
+      event.dataTransfer.setData('item', data)
+    },
+    dragend(event) {
+      event.dataTransfer.clearData()
+    },
+    drop(event) {
+      console.log('drop')
+      console.log(event)
+      console.log(event.target)
+      console.log(event.toElement)
+      console.log(event.srcElement)
+      let data = event.dataTransfer.getData('item')
+      this.dropData = data
+      console.log('data: ', data)
+    }
+  },
 }
 </script>
 
@@ -54,5 +111,9 @@ li {
 }
 a {
   color: #42b983;
+}
+
+.item {
+  border: 1px solid #000000;
 }
 </style>
